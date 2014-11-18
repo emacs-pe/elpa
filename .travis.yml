@@ -1,0 +1,12 @@
+language: generic
+script: bash -ex .travis-ci.sh
+cache:
+  directories:
+    - working
+branches:
+  only:
+    - master
+env:
+  matrix:
+    - ARCHIVE=stable PKGDIR=${TRAVIS_BUILD_DIR}/${ARCHIVE} STABLE=true
+    - ARCHIVE=unstable PKGDIR=${TRAVIS_BUILD_DIR}/${ARCHIVE}

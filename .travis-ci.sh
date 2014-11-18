@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# https://github.com/travis-ci/travis-ci/issues/2811
+if [ "$TRAVIS" = "true" ]; then
+  PATH=${PATH//:\.\/node_modules\/\.bin/}
+fi
+
 sudo add-apt-repository -y ppa:cassou/emacs
 sudo apt-get update -qq
 sudo apt-get install -qq curl exim4 m4

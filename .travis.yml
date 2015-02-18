@@ -17,3 +17,16 @@ script:
 cache:
   directories:
     - working
+deploy:
+  provider: s3
+  access_key_id:
+    secure: eVW0RtbSVK3zqjOhiLtogp88RBdT5gOtxd2kRHSnL9BfMcg0vSskbHFa1+jFLdmwlNdT6HMF4jmfay10rdQGG9F+fNQ2rRxhK0x2MQ9TPyWQEurJLGEjBXHxn6zJDalcAkrKMbZw237LQ9TUZ/HZZT8+1zYy44+5xfXHxIAW05Y=
+  secret_access_key:
+    secure: Q4jrbHRJWLkz1LlAeBPTS0GlVWtnHcTgwTUmW9s03Kvvx/Fq8tIduns2+xhkpSe6YyP7rQ8ccYDGywM418ApT2JKQiGtIr0yA7P/dS6OIj3F09uLw3MenDQyCmqQ9uRfdZm/LjAjXnvco4mjHrjJ2wpBOiFFUmwxqtN/2UL4RPw=
+  bucket: emacs-pe
+  acl: public_read
+  skip_cleanup: true
+  local_dir: "${ARCHIVE}"
+  upload-dir: "${ARCHIVE}"
+  on:
+    repo: emacs-pe/melpa

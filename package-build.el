@@ -68,7 +68,7 @@
   :group 'package-build
   :type 'boolean)
 
-(defcustom package-build-stable (getenv "STABLE")
+(defcustom package-build-stable (string= (getenv "STABLE") "true")
   "When non-nil, `package-build' tries to build packages from versions-tagged code."
   :group 'package-build
   :type 'boolean)

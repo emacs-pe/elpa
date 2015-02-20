@@ -9,8 +9,8 @@ This repository builds the recipes of [melpa][] using [travis-ci][].
 See https://github.com/milkypostman/melpa#usage. You can replace the
 melpa archives location with the following urls:
 
-+ **melpa**:  `https://d3bjz7gdfskqte.cloudfront.net/unstable/`
-+ **melpa stable**: `https://d3bjz7gdfskqte.cloudfront.net/stable/`
++ **melpa**: `http://s3.amazonaws.com/melpa.emacs.pe/unstable/`
++ **melpa stable**: `http://s3.amazonaws.com/melpa.emacs.pe/stable/`
 
 
 [melpa]: https://github.com/milkypostman/melpa "Milkypostman's ELPA"

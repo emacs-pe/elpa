@@ -12,8 +12,8 @@ before_install:
   - find melpa-master/recipes -type f -execdir mv {} {}.rcp \;
   - mkdir -p "${PKGDIR}"
 script:
-  - make PKGDIR="${PKGDIR}" STABLE="${STABLE}" RCPDIR="melpa-master/recipes" -j6 pkgs
-  - make PKGDIR="${PKGDIR}" STABLE="${STABLE}" archive-contents
+  - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" RCPDIR="melpa-master/recipes" -j6 pkgs
+  - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" archive-contents
 cache:
   directories:
     - working

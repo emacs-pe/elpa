@@ -3,7 +3,7 @@
 
 This repository builds the recipes of [melpa][] using [travis-ci][].
 
-> **Note**: The recipes are build every 6 hours.
+> **Note**: The recipes are build every 12 hours.
 
 ## Usage
 See https://github.com/milkypostman/melpa#usage. You can replace the

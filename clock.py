@@ -31,7 +31,7 @@ GITHUB_REPO_SLUG = os.environ['GITHUB_REPO_SLUG']
 scheduler = BlockingScheduler(timezone=utc)
 
 
-@scheduler.scheduled_job('interval', hours=6)
+@scheduler.scheduled_job('interval', hours=12)
 def restart_last_build():
     print('Restarting last build of {0} at {1}'.format(GITHUB_REPO_SLUG, datetime.utcnow()))
     headers = {

@@ -1,12 +1,9 @@
 language: emacs-lisp
+sudo: false
 env:
   - ARCHIVE=unstable PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}"
   - ARCHIVE=stable   PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}" STABLE=true
 before_install:
-  - sudo add-apt-repository -y ppa:cassou/emacs
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq curl exim4 m4 bzr cvs darcs fossil git mercurial subversion
-  - sudo apt-get install -qq emacs24 emacs24-el emacs24-common-non-dfsg
   - export PATH="${PATH//:\.\/node_modules\/\.bin/}"   # XXX: https://github.com/travis-ci/travis-ci/issues/2811
   - curl -fsSL https://github.com/milkypostman/melpa/archive/master.tar.gz | tar xz
   - find melpa-master/recipes -type f -execdir mv {} {}.rcp \;
@@ -14,6 +11,23 @@ before_install:
 script:
   - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" RCPDIR="melpa-master/recipes" -j6 pkgs
   - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" archive-contents
+addons:
+  apt:
+    sources:
+      - cassou-emacs
+    packages:
+      - curl
+      - exim4
+      - m4
+      - bzr
+      - cvs
+      - darcs
+      - fossil
+      - git
+      - mercurial
+      - subversion
+      - emacs24-nox
+      - emacs24-el
 cache:
   directories:
     - working

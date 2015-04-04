@@ -17,17 +17,15 @@ addons:
       - cassou-emacs
     packages:
       - curl
-      - exim4
-      - m4
+      - emacs24
       - bzr
-      - cvs
-      - darcs
-      - fossil
       - git
       - mercurial
       - subversion
-      - emacs24-nox
-      - emacs24-el
+      ## Currently not available in travis-ci apt-package-whitelist
+      # - cvs
+      # - darcs
+      # - fossil
 cache:
   directories:
     - working

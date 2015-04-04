@@ -26,9 +26,6 @@ addons:
       # - cvs
       # - darcs
       # - fossil
-cache:
-  directories:
-    - working
 deploy:
   provider: s3
   access_key_id:

@@ -1,5 +1,7 @@
 language: emacs-lisp
-sudo: false
+# XXX: Requires sudo because; because travis-ci apt-package-whitelist
+# doesn't contain the following packages: cvs darcs fossil texinfo
+sudo: required
 env:
   - ARCHIVE=unstable PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}"
   - ARCHIVE=stable   PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}" STABLE=true
@@ -22,10 +24,10 @@ addons:
       - git
       - mercurial
       - subversion
-      ## Currently not available in travis-ci apt-package-whitelist
-      # - cvs
-      # - darcs
-      # - fossil
+      - cvs
+      - darcs
+      - fossil
+      - texinfo
 deploy:
   provider: s3
   access_key_id:

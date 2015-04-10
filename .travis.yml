@@ -6,6 +6,10 @@ env:
   - ARCHIVE=unstable PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}"
   - ARCHIVE=stable   PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}" STABLE=true
 before_install:
+  - export DEBIAN_FRONTEND=noninteractive
+  - sudo -E apt-add-repository -y "ppa:cassou/emacs"
+  - sudo -E apt-get -yq update
+  - sudo -E apt-get -yq --no-install-suggests --no-install-recommends install curl emacs24 bzr git mercurial subversion cvs darcs fossil texinfo
   - export PATH="${PATH//:\.\/node_modules\/\.bin/}"   # XXX: https://github.com/travis-ci/travis-ci/issues/2811
   - curl -fsSL https://github.com/milkypostman/melpa/archive/master.tar.gz | tar xz
   - find melpa-master/recipes -type f -execdir mv {} {}.rcp \;
@@ -13,21 +17,6 @@ before_install:
 script:
   - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" RCPDIR="melpa-master/recipes" -j4 pkgs
   - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" archive-contents
-addons:
-  apt:
-    sources:
-      - cassou-emacs
-    packages:
-      - curl
-      - emacs24
-      - bzr
-      - git
-      - mercurial
-      - subversion
-      - cvs
-      - darcs
-      - fossil
-      - texinfo
 deploy:
   provider: s3
   access_key_id:

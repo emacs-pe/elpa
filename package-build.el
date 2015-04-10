@@ -89,7 +89,7 @@ This must be a version which supports the \"-k\" option."
 
 If an external process takes longer than
 `package-build-timeout-secs' seconds to complete, the process is
-terminated. The `package-build-timeout-secs' variable will only
+terminated.  The `package-build-timeout-secs' variable will only
 have an effect if `package-build-timeout-executable' is not nil."
   :group 'package-build
   :type 'number)
@@ -184,7 +184,8 @@ be identical."
   (ignore-errors (version-to-list str)))
 
 (defun pb/find-tag-version-newest (regex &optional bound &rest additional-groups)
-  "Find the newest version matching REGEX, optionally looking only as far as BOUND."
+  "Find the newest version matching REGEX after point, maybe stopping at BOUND.
+The first capture group 1 is examined, together with any ADDITIONAL-GROUPS."
   (let* ((text (buffer-substring-no-properties
                 (or bound (point-min)) (point)))
          (tags (cl-remove-if-not
@@ -207,9 +208,11 @@ be identical."
 Output is written to the current buffer."
   (let* ((default-directory (file-name-as-directory (or dir default-directory)))
          (timeout (number-to-string package-build-timeout-secs))
-         (argv (if package-build-timeout-executable
-                   (append (list package-build-timeout-executable "-k" "60" timeout command) args)
-                 (cons command args))))
+         (argv (append
+                '("env" "LC_ALL=C")
+                (if package-build-timeout-executable
+                    (append (list package-build-timeout-executable "-k" "60" timeout command) args)
+                  (cons command args)))))
     (unless (file-directory-p default-directory)
       (error "Can't run process in non-existent directory: %s" default-directory))
     (let ((exit-code (apply 'process-file (car argv) nil (current-buffer) t (cdr argv))))
@@ -685,18 +688,20 @@ Optionally PRETTY-PRINT the data."
                     target-dir))
 
 (defun pb/update-or-insert-version (version)
-  "Ensure current buffer has a \"Version: VERSION\" header."
+  "Ensure current buffer has a \"Package-Version: VERSION\" header."
   (goto-char (point-min))
   (if (let ((case-fold-search t))
-        (re-search-forward "^;+* *Version *: *" nil t))
+        (re-search-forward "^;+* *Package-Version *: *" nil t))
       (progn
         (move-beginning-of-line nil)
         (search-forward "V" nil t)
         (backward-char)
         (insert "X-Original-")
         (move-beginning-of-line nil))
+    ;; Put the new header in a sensible place if we can
+    (re-search-forward "^;+* *\\(Version:\\|Keywords\\|URL\\)" nil t)
     (forward-line))
-  (insert (format ";; Version: %s" version))
+  (insert (format ";; Package-Version: %s" version))
   (newline))
 
 (defun pb/ensure-ends-here-line (file-path)
@@ -730,7 +735,20 @@ Optionally PRETTY-PRINT the data."
     (let ((package-def (pb/read-from-file file-path)))
       (if (eq 'define-package (car package-def))
           (let* ((pkgfile-info (cdr package-def))
-                 (descr (nth 2 pkgfile-info)))
+                 (descr (nth 2 pkgfile-info))
+                 (rest-plist (cl-subseq pkgfile-info (min 4 (length pkgfile-info))))
+                 (extras (let (alist)
+                           (while rest-plist
+                             (unless (memq (car rest-plist) '(:kind :archive))
+                               (let ((value (cadr rest-plist)))
+                                 (when value
+                                   (push (cons (car rest-plist)
+                                               (if (eq (car-safe value) 'quote)
+                                                   (cadr value)
+                                                 value))
+                                         alist))))
+                             (setq rest-plist (cddr rest-plist)))
+                           alist)))
             (when (string-match "[\r\n]" descr)
               (error "Illegal multi-line package description in %s" file-path))
             (vector
@@ -740,7 +758,8 @@ Optionally PRETTY-PRINT the data."
                 (list (car elt) (version-to-list (cadr elt))))
               (eval (nth 3 pkgfile-info)))
              descr
-             (nth 1 pkgfile-info)))
+             (nth 1 pkgfile-info)
+             extras))
         (error "No define-package found in %s" file-path)))))
 
 (defun pb/merge-package-info (pkg-info name version)

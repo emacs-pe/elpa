@@ -11,7 +11,7 @@ before_install:
   - find melpa-master/recipes -type f -execdir mv {} {}.rcp \;
   - mkdir -p "${PKGDIR}"
 script:
-  - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" RCPDIR="melpa-master/recipes" -j6 pkgs
+  - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" RCPDIR="melpa-master/recipes" -j4 pkgs
   - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" archive-contents
 addons:
   apt:

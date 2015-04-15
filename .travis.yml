@@ -1,10 +1,14 @@
-language: emacs-lisp
+language: python
 # XXX: Requires sudo because; because travis-ci apt-package-whitelist
 # doesn't contain the following packages: cvs darcs fossil texinfo
 sudo: required
 env:
-  - ARCHIVE=unstable PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}"
-  - ARCHIVE=stable   PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}" STABLE=true
+  global:
+    - secure: YCFc6I0AEAmqkvb5nSF7eEGgC7Wa8yMTvW4X4G6ruCTNPX17F3XACYAyzhyh5KBPua+gHplCY+ZHMV5oNC6DMjfHzZxAb6OKNUKbphBr4LKiDAkD8/WgKYzCDZBO0fdMunzg5HEQCdh1BVxggpa/7Lh6hDmnHycHa7IbTQFXD38=
+    - secure: megWwJI3IZY3OHV3ridumop1ZZSIfjfsFxEGkWvfKlw50JU3RRNPWK9GjeGJx07fF1VR4xcMPvxnp/0FphXUrzMRfwbwL1zg/ARICEMj6R/+RCrP/t8y4HjCsrUOz7mzU4qkOLqjW4u/seo/hOPb6Z7hdC5S0jE2lYRamWedXwQ=
+  matrix:
+    - ARCHIVE=unstable PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}"
+    - ARCHIVE=stable   PKGDIR="${TRAVIS_BUILD_DIR}/${ARCHIVE}" STABLE=true
 before_install:
   - export DEBIAN_FRONTEND=noninteractive
   - sudo -E apt-add-repository -y "ppa:cassou/emacs"
@@ -17,16 +21,21 @@ before_install:
 script:
   - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" RCPDIR="melpa-master/recipes" -j4 pkgs
   - travis_retry make PKGDIR="${PKGDIR}" STABLE="${STABLE}" archive-contents
+before_deploy:
+  - pip install boto==2.38
+  - python clean_archive.py
+  # https://forums.aws.amazon.com/thread.jspa?threadID=55746
+  - find "${PKGDIR}" -name '*+*' -execdir bash -c "fname='{}'; ln -s \${fname} \"\${fname//+/ }\"" \;
 deploy:
-  provider: s3
-  access_key_id:
-    secure: eVW0RtbSVK3zqjOhiLtogp88RBdT5gOtxd2kRHSnL9BfMcg0vSskbHFa1+jFLdmwlNdT6HMF4jmfay10rdQGG9F+fNQ2rRxhK0x2MQ9TPyWQEurJLGEjBXHxn6zJDalcAkrKMbZw237LQ9TUZ/HZZT8+1zYy44+5xfXHxIAW05Y=
-  secret_access_key:
-    secure: Q4jrbHRJWLkz1LlAeBPTS0GlVWtnHcTgwTUmW9s03Kvvx/Fq8tIduns2+xhkpSe6YyP7rQ8ccYDGywM418ApT2JKQiGtIr0yA7P/dS6OIj3F09uLw3MenDQyCmqQ9uRfdZm/LjAjXnvco4mjHrjJ2wpBOiFFUmwxqtN/2UL4RPw=
-  bucket: melpa.emacs.pe
-  acl: public_read
-  skip_cleanup: true
-  local_dir: "${ARCHIVE}"
-  upload-dir: "${ARCHIVE}"
-  on:
-    repo: emacs-pe/melpa
+  - provider: s3
+    access_key_id:
+      secure: cGDfy7Cb6mYa5w5JuEdQKKJDelLb6B7seib05r6XKxOBsVqxoElNx9JiKTPmqHFhHyj8U/M3FRBlu6PNtUUk7hGVnSocUNfqSKIpQoZQrhEyir0i2Rf/eDjgzpiJeuVtwu/R6Xd1bEv8XbiTvsI6PLrOI98aa7YE8zWmn4nHTdI=
+    secret_access_key:
+      secure: XGNuv81epBKLZOLHnY/vTQK4ZHWEXllsQsflrK9ssxfbXUHM1eVECOSho7mcxz2DZQBOXVHxoxI6SaxJpUrS0+lt7uWK5rbsltfSeP1GFW3Ye8J9bnSkwBveO2w/gMAhQp6CWgHjbXAsNnRwF6P8N7VgVknYyCmXOam5m874ghY=
+    bucket: melpa.emacs.pe
+    acl: public_read
+    skip_cleanup: true
+    local_dir: "${ARCHIVE}"
+    upload-dir: "${ARCHIVE}"
+    on:
+      repo: emacs-pe/melpa

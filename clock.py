@@ -14,13 +14,12 @@ You need to get an travis-ci api key, see: http://docs.travis-ci.com/api/#authen
     heroku config:set GITHUB_REPO_SLUG=emacs-pe/melpa
     heroku ps:scale clock=1
 """
-
 from __future__ import print_function
 
 import os
+from datetime import datetime
 
 import requests
-from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 from pytz import utc
 

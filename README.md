@@ -3,14 +3,7 @@
 
 This repository builds the recipes of [melpa][] using [travis-ci][].
 
-> **Note**: The recipes are build every 12 hours.
-
-## Usage
-See https://github.com/milkypostman/melpa#usage. You can replace the
-melpa archives location with the following urls:
-
-+ **melpa**: `http://s3.amazonaws.com/melpa.emacs.pe/unstable/`
-+ **melpa stable**: `http://s3.amazonaws.com/melpa.emacs.pe/stable/`
+**[No longer maintained]**
 
 
 [melpa]: https://github.com/milkypostman/melpa "Milkypostman's ELPA"
